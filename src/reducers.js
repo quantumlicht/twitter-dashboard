@@ -1,44 +1,61 @@
 import { combineReducers } from 'redux'
-import { ADD_WINE, TOGGLE_WINE, SET_VISIBILITY_FILTER, VisibilityFilters } from './actions'
-const { SHOW_ALL } = VisibilityFilters
+import {
+  SELECT_FEED, INVALIDATE_FEED,
+  REQUEST_TWEETS, RECEIVE_TWEETS
+} from './actions'
 
-function visibilityFilter(state = SHOW_ALL, action) {
+function selectedFeed(state = 'appdirect', action) {
   switch (action.type) {
-    case SET_VISIBILITY_FILTER:
-      return action.filter
-    default:
-      return state
+  case SELECT_FEED:
+    return action.feed
+  default:
+    return state
   }
 }
 
-function wines(state = [], action) {
+function tweets(state = {
+  isFetching: false,
+  didInvalidate: false,
+  items: []
+}, action) {
   switch (action.type) {
-    case ADD_WINE:
-      return [
-        ...state,
-        {
-          text: action.text,
-          completed: false,
-          id: state.length
-        }
-      ]
-    case TOGGLE_WINE:
-      return state.map((wine, index) => {
-        if (index === action.index) {
-          return Object.assign({}, wine, {
-            completed: !wine.completed
-          })
-        }
-        return wine
+    case INVALIDATE_FEED:
+      return Object.assign({}, state, {
+        didInvalidate: true
+      })
+    case REQUEST_TWEETS:
+      return Object.assign({}, state, {
+        isFetching: true,
+        didInvalidate: false
+      })
+    case RECEIVE_TWEETS:
+      return Object.assign({}, state, {
+        isFetching: false,
+        didInvalidate: false,
+        items: action.tweets,
+        lastUpdated: action.receivedAt
       })
     default:
       return state
   }
 }
 
-const wineApp = combineReducers({
-  visibilityFilter,
-  wines
+function tweetsByFeed(state = { }, action) {
+  switch (action.type) {
+    case INVALIDATE_FEED:
+    case RECEIVE_TWEETS:
+    case REQUEST_TWEETS:
+      return Object.assign({}, state, {
+        [action.feed]: tweets(state[action.feed], action)
+      })
+    default:
+      return state
+  }
+}
+
+const rootReducer = combineReducers({
+  tweetsByFeed,
+  selectedFeed
 })
 
-export default wineApp
+export default rootReducer
