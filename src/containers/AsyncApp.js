@@ -1,3 +1,5 @@
+import '../styles/app.scss';
+
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { selectFeed, fetchTweetsIfNeeded, invalidateFeed } from '../actions'
@@ -41,7 +43,7 @@ class AsyncApp extends Component {
       <div>
       <Picker value={selectedFeed}
                onChange={this.handleChange}
-               options={[ 'appdirect', 'laughingsquid', 'techcrunch' ]} />
+               options={[ 'appdirect', 'laughingsquid', 'techcrunch', 'radialpoint']} />
       <p>
          {lastUpdated &&
            <span>
