@@ -6,6 +6,7 @@ import { selectFeed, fetchTweetsIfNeeded, invalidateFeed } from '../actions'
 import Picker from '../components/Picker'
 import Tweets from '../components/Tweets'
 
+const feeds = [ 'appdirect', 'laughingsquid', 'techcrunch', 'radialpoint'];
 class AsyncApp extends Component {
   constructor(props) {
     super(props)
@@ -15,7 +16,10 @@ class AsyncApp extends Component {
 
   componentDidMount() {
     const { dispatch, selectedFeed } = this.props
-    dispatch(fetchTweetsIfNeeded(selectedFeed))
+    for (var feed of feeds) {
+      dispatch(fetchTweetsIfNeeded(feed))
+    }
+
   }
 
   componentWillReceiveProps(nextProps) {
@@ -33,52 +37,60 @@ class AsyncApp extends Component {
     e.preventDefault()
 
     const { dispatch, selectedFeed } = this.props
-    dispatch(invalidateFeed(selectedFeed))
-    dispatch(fetchTweetsIfNeeded(selectedFeed))
+    for (var feed of feeds) {
+      dispatch(invalidateFeed(feed))
+      dispatch(fetchTweetsIfNeeded(feed))
+    }
+
   }
 
   render() {
-    const { selectedFeed, tweets, isFetching, lastUpdated } = this.props
+    const {tweetsByFeed} = this.props
+    // const { selectedFeed, tweets, isFetching, lastUpdated } = this.props
     return (
       <div>
-      <Picker value={selectedFeed}
-               onChange={this.handleChange}
-               options={[ 'appdirect', 'laughingsquid', 'techcrunch', 'radialpoint']} />
-      <p>
-         {lastUpdated &&
-           <span>
-             Last updated at {new Date(lastUpdated).toLocaleTimeString()}.
-             {' '}
-           </span>
-         }
-         {!isFetching &&
-           <a href='#'
-              onClick={this.handleRefreshClick}>
-             Refresh
-           </a>
-         }
-       </p>
-       {isFetching && tweets.length === 0 &&
-          <h2>Loading...</h2>
-        }
-        {!isFetching && tweets.length === 0 &&
-          <h2>Empty.</h2>
-        }
-        {tweets.length > 0 &&
-          <div style={{ opacity: isFetching ? 0.5 : 1 }}>
-            <Tweets tweets={tweets} />
-          </div>
-        }
-      </div>
+          <a href='#'
+             onClick={this.handleRefreshClick}>
+            Refresh
+          </a>
+
+      {
+        Object.entries(tweetsByFeed).map(([title, feed])=>
+          (<div>
+          <h2>{title}</h2>
+          <p>
+             {feed.lastUpdated &&
+               <span>
+                 Last updated at {new Date(feed.lastUpdated).toLocaleTimeString()}.
+                 {' '}
+               </span>
+             }
+           </p>
+           {feed.isFetching && feed.items.length === 0 &&
+              <h2>Loading...</h2>
+            }
+            {!feed.isFetching && feed.items.length === 0 &&
+              <h2>Empty.</h2>
+            }
+            {feed.items.length > 0 &&
+              <div style={{ opacity: feed.isFetching ? 0.5 : 1 }}>
+                <Tweets tweets={feed.items} />
+              </div>
+            }
+          </div>)
+        )}
+    </div>
+
     )
   }
 }
 
 AsyncApp.propTypes = {
-  selectedFeed: PropTypes.string.isRequired,
-  tweets: PropTypes.array.isRequired,
-  isFetching: PropTypes.bool.isRequired,
-  lastUpdated: PropTypes.number,
+  // selectedFeed: PropTypes.string.isRequired,
+  // tweets: PropTypes.array.isRequired,
+  // isFetching: PropTypes.bool.isRequired,
+  tweetsByFeed: PropTypes.object.isRequired,
+  // lastUpdated: PropTypes.number,
   dispatch: PropTypes.func.isRequired
 }
 
@@ -94,10 +106,7 @@ function mapStateToProps(state) {
   }
 
   return {
-    selectedFeed,
-    tweets,
-    isFetching,
-    lastUpdated
+    tweetsByFeed
   }
 }
 
