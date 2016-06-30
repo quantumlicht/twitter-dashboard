@@ -6,5 +6,15 @@
 }
 
 #root {
-  border: 1px solid black;
+  margin: 5px;
+}
+.tweet-list {
+  padding: 5px;
+  li {
+    font-size: 14px;
+    list-style-type: none;
+    border: 1px solid black;
+    padding: 5px;
+  }
+
 }
