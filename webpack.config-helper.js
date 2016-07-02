@@ -37,8 +37,8 @@ module.exports = (options) => {
         query: {
           presets: ['es2015']
         }
-      }]
-    }
+      }
+    ]}
   };
 
   if (options.isProduction) {
@@ -56,7 +56,7 @@ module.exports = (options) => {
 
     webpackConfig.module.loaders.push({
       test: /\.scss$/i,
-      loader: ExtractSASS.extract(['css', 'sass'])
+      loader: ExtractSASS.extract("style-loader", "css-loader!autoprefixer-loader!sass-loader")//.extract(['css', 'sass', 'scss'])
     });
 
   } else {
