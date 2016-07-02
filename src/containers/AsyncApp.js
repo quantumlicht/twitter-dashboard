@@ -2,86 +2,122 @@ import '../styles/app.scss';
 
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { selectFeed, fetchTweetsIfNeeded, invalidateFeed } from '../actions'
+import { fetchTweetsIfNeeded, invalidateFeed, editLayout, cancelEdit, saveLayoutIfValid } from '../actions/general'
 import Picker from '../components/Picker'
 import Tweets from '../components/Tweets'
+import LayoutEditor from '../components/LayoutEditor'
+import { feeds } from '../defaults'
 
-const feeds = ['laughingsquid', 'techcrunch', 'billgates'];
 class AsyncApp extends Component {
   constructor(props) {
     super(props)
-    this.handleChange = this.handleChange.bind(this)
     this.handleRefreshClick = this.handleRefreshClick.bind(this)
+    this.handleEditClick = this.handleEditClick.bind(this)
+    this.handleCancelEditClick = this.handleCancelEditClick.bind(this)
+    this.handleLayoutSave = this.handleLayoutSave.bind(this)
   }
 
   componentDidMount() {
-    const { dispatch, selectedFeed } = this.props
+    const { dispatch, tweetsByFeed, layout } = this.props
     for (var feed of feeds) {
-      dispatch(fetchTweetsIfNeeded(feed))
+      dispatch(fetchTweetsIfNeeded(feed, layout))
     }
-
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.selectedFeed !== this.props.selectedFeed) {
-      const { dispatch, selectedFeed } = nextProps
-      dispatch(fetchTweetsIfNeeded(selectedFeed))
+    const { dispatch, tweetsByFeed, layout } = nextProps
+    for (var feed of feeds) {
+      dispatch(fetchTweetsIfNeeded(feed, layout))
     }
   }
 
-  handleChange(nextFeed) {
-    this.props.dispatch(selectFeed(nextFeed))
+  handleLayoutSave(nextLayout) {
+    const { dispatch, tweetsByFeed, layout } = this.props
+    console.log('handleLayoutSave', arguments)
+    dispatch(saveLayoutIfValid(nextLayout))
   }
 
   handleRefreshClick(e) {
     e.preventDefault()
-
-    const { dispatch, selectedFeed } = this.props
+    const { dispatch, tweetsByFeed, layout } = this.props
     for (var feed of feeds) {
       dispatch(invalidateFeed(feed))
-      dispatch(fetchTweetsIfNeeded(feed))
+      dispatch(fetchTweetsIfNeeded(feed, layout))
     }
+  }
+
+  handleCancelEditClick(e) {
+    e.preventDefault()
+    const { dispatch, tweetsByFeed, layout } = this.props
+    dispatch(cancelEdit())
+  }
+
+  handleEditClick(e) {
+    e.preventDefault()
+    const { dispatch, tweetsByFeed, layout } = this.props
+    dispatch(editLayout(layout))
 
   }
 
   render() {
-    const {tweetsByFeed} = this.props
+    const {tweetsByFeed, layout} = this.props
     // const { selectedFeed, tweets, isFetching, lastUpdated } = this.props
     return (
-      <div>
-      <a className="btn refresh-btn" href='#'
-         onClick={this.handleRefreshClick}>
-        Refresh
-      </a>
-      <div className="row">
-      {
-        Object.entries(tweetsByFeed).map(([title, feed], index)=>
-          (<div className="column column-3">
-          <h2 class="feed-title">{title}</h2>
-          <p>
-             {feed.lastUpdated &&
-               <span className="muted">
-                 Last updated at {new Date(feed.lastUpdated).toLocaleTimeString()}.
-                 {' '}
-               </span>
-             }
-           </p>
-           {feed.isFetching && feed.items.length === 0 &&
-              <h2>Loading...</h2>
-            }
-            {!feed.isFetching && feed.items.length === 0 &&
-              <h2>Empty.</h2>
-            }
-            {feed.items.length > 0 &&
-              <div style={{ opacity: feed.isFetching ? 0.5 : 1 }}>
-                <Tweets tweets={feed.items} />
-              </div>
-            }
-          </div>)
-        )}
-    </div>
-    </div>
+      <div className={layout.theme}>
+        <div className="row">
+          <a className="btn btn-refresh" href='#'
+             onClick={this.handleRefreshClick}>
+            Refresh
+          </a>
+          <a className="btn btn-edit" href='#'
+             onClick={this.handleEditClick}>
+            Edit Template
+          </a>
+          {layout.isEditing &&
+            <a className="btn btn-cancel" href='#'
+              onClick={this.handleCancelEditClick}>
+              Cancel
+            </a>
+          }
+        </div>
+        <div className="row">
+          {layout.isEditing &&
+            <LayoutEditor {...layout} onSave={this.handleLayoutSave}/>
+          }
 
+        </div>
+
+        <div className="row">
+        {
+          Object.entries(tweetsByFeed).map(([title, feed], index)=>
+            (<div className="column column-3">
+            <h2 class="feed-title">{title}</h2>
+            {feed.error &&
+                <p>{feed.error.message}</p>
+            }
+            <p>
+               {feed.lastUpdated && !feed.error &&
+                 <span className="muted">
+                   Last updated at {new Date(feed.lastUpdated).toLocaleTimeString()}.
+                   {' '}
+                 </span>
+               }
+             </p>
+             {feed.isFetching && feed.items.length === 0 &&
+                <h2>Loading...</h2>
+              }
+              {!feed.isFetching && feed.items.length === 0 &&
+                <h2>Empty.</h2>
+              }
+              {feed.items.length > 0 &&
+                <div style={{ opacity: feed.isFetching ? 0.5 : 1 }}>
+                  <Tweets tweets={feed.items} />
+                </div>
+              }
+            </div>)
+          )}
+        </div>
+      </div>
     )
   }
 }
@@ -91,23 +127,25 @@ AsyncApp.propTypes = {
   // tweets: PropTypes.array.isRequired,
   // isFetching: PropTypes.bool.isRequired,
   tweetsByFeed: PropTypes.object.isRequired,
+  layout: PropTypes.object.isRequired,
   // lastUpdated: PropTypes.number,
   dispatch: PropTypes.func.isRequired
 }
 
 function mapStateToProps(state) {
-  const { selectedFeed, tweetsByFeed } = state
-  const {
-    isFetching,
-    lastUpdated,
-    items: tweets
-  } = tweetsByFeed[selectedFeed] || {
-    isFetching: true,
-    items: []
-  }
+  const { tweetsByFeed, layout } = state
+  // const {
+  //   isFetching,
+  //   lastUpdated,
+  //   items: tweets
+  // } = tweetsByFeed[selectedFeed] || {
+  //   isFetching: true,
+  //   items: []
+  // }
 
   return {
-    tweetsByFeed
+    tweetsByFeed,
+    layout
   }
 }
 
