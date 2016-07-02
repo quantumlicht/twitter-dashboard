@@ -6,7 +6,7 @@ import { selectFeed, fetchTweetsIfNeeded, invalidateFeed } from '../actions'
 import Picker from '../components/Picker'
 import Tweets from '../components/Tweets'
 
-const feeds = [ 'appdirect', 'laughingsquid', 'techcrunch', 'radialpoint'];
+const feeds = ['laughingsquid', 'techcrunch', 'billgates'];
 class AsyncApp extends Component {
   constructor(props) {
     super(props)
@@ -49,18 +49,18 @@ class AsyncApp extends Component {
     // const { selectedFeed, tweets, isFetching, lastUpdated } = this.props
     return (
       <div>
-          <a href='#'
-             onClick={this.handleRefreshClick}>
-            Refresh
-          </a>
-
+      <a className="btn refresh-btn" href='#'
+         onClick={this.handleRefreshClick}>
+        Refresh
+      </a>
+      <div className="row">
       {
-        Object.entries(tweetsByFeed).map(([title, feed])=>
-          (<div>
-          <h2>{title}</h2>
+        Object.entries(tweetsByFeed).map(([title, feed], index)=>
+          (<div className="column column-3">
+          <h2 class="feed-title">{title}</h2>
           <p>
              {feed.lastUpdated &&
-               <span>
+               <span className="muted">
                  Last updated at {new Date(feed.lastUpdated).toLocaleTimeString()}.
                  {' '}
                </span>
@@ -79,6 +79,7 @@ class AsyncApp extends Component {
             }
           </div>)
         )}
+    </div>
     </div>
 
     )
