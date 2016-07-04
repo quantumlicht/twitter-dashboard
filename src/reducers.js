@@ -14,7 +14,7 @@ function getCurrentLayout(){
 }
 
 
-function selectedFeed(state = 'appdirect', action) {
+function selectedFeed(state = feeds[0], action) {
   switch (action.type) {
   case SELECT_FEED:
     return action.feed

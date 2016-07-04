@@ -1,4 +1,4 @@
-# appdirect-code-challenge-solution
+# code-challenge-solution
 
 Twitter dashboard
 
