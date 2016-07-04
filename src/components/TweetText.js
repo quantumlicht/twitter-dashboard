@@ -15,8 +15,8 @@ const TweetText = ({tweet}) => {
       tweetFragments.push(tweet.text.substr(idx))
       return (
         <p>
-          {tweetFragments.map((fragment)=>
-              (<span>
+          {tweetFragments.map((fragment, idx)=>
+              (<span key={idx}>
                 {fragment}
               </span>)
           )}

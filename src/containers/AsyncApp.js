@@ -33,7 +33,6 @@ class AsyncApp extends Component {
 
   handleLayoutSave(nextLayout) {
     const { dispatch, tweetsByFeed, layout } = this.props
-    console.log('handleLayoutSave', arguments)
     dispatch(saveLayoutIfValid(nextLayout))
   }
 
@@ -61,20 +60,21 @@ class AsyncApp extends Component {
 
   render() {
     const {tweetsByFeed, layout} = this.props
+    console.log('tweetsByFeed', tweetsByFeed)
     // const { selectedFeed, tweets, isFetching, lastUpdated } = this.props
     return (
-      <div className={layout.theme}>
+      <div id ="app-container" className={layout.theme}>
         <div className="row">
-          <a className="btn btn-refresh" href='#'
+          <a className="btn btn-default" href='#'
              onClick={this.handleRefreshClick}>
             Refresh
           </a>
-          <a className="btn btn-edit" href='#'
+          <a className="btn btn-primary" href='#'
              onClick={this.handleEditClick}>
             Edit Template
           </a>
           {layout.isEditing &&
-            <a className="btn btn-cancel" href='#'
+            <a className="btn btn-default" href='#'
               onClick={this.handleCancelEditClick}>
               Cancel
             </a>
@@ -84,36 +84,39 @@ class AsyncApp extends Component {
           {layout.isEditing &&
             <LayoutEditor {...layout} onSave={this.handleLayoutSave}/>
           }
-
         </div>
 
         <div className="row">
         {
-          Object.entries(tweetsByFeed).map(([title, feed], index)=>
-            (<div className="column column-3">
-            <h2 class="feed-title">{title}</h2>
-            {feed.error &&
-                <p>{feed.error.message}</p>
-            }
-            <p>
-               {feed.lastUpdated && !feed.error &&
-                 <span className="muted">
-                   Last updated at {new Date(feed.lastUpdated).toLocaleTimeString()}.
-                   {' '}
-                 </span>
-               }
-             </p>
-             {feed.isFetching && feed.items.length === 0 &&
-                <h2>Loading...</h2>
-              }
-              {!feed.isFetching && feed.items.length === 0 &&
-                <h2>Empty.</h2>
-              }
-              {feed.items.length > 0 &&
-                <div style={{ opacity: feed.isFetching ? 0.5 : 1 }}>
-                  <Tweets tweets={feed.items} />
-                </div>
-              }
+          Object.entries(tweetsByFeed).map(([title, feed], index)=> (
+            <div className={`column column-4 feed-column ${layout.theme}`} key={index}>
+            <div className={`row ${layout.theme} feed-header`}>
+                <h2 className="feed-title center">{title}</h2>
+                {feed.errors && feed.errors.map( (error)=>
+                  (<p>{error.message}</p>)
+                )}
+                <p className="center">
+                  {feed.lastUpdated && !feed.error &&
+                    <span>
+                      Last updated at {new Date(feed.lastUpdated).toLocaleTimeString()}.
+                      {' '}
+                    </span>
+                  }
+                </p>
+                {feed.isFetching && feed.items.length === 0 &&
+                  <h2>Loading...</h2>
+                }
+                {!feed.isFetching && feed.items.length === 0 &&
+                  <h2>Empty.</h2>
+                }
+              </div>
+              <div className="row feed-body">
+                {feed.items.length > 0 &&
+                  <div style={{ opacity: feed.isFetching ? 0.5 : 1 }}>
+                    <Tweets tweets={feed.items} layout={layout} />
+                  </div>
+                }
+              </div>
             </div>)
           )}
         </div>

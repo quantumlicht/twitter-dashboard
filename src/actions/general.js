@@ -2,10 +2,9 @@
  * action types
  */
  import fetch from 'isomorphic-fetch'
-
+ import { feeds } from '../defaults'
 export const REQUEST_TWEETS = 'REQUEST_TWEETS'
 export const RECEIVE_TWEETS = 'RECEIVE_TWEETS'
-export const SELECT_FEED = 'SELECT_FEED'
 export const INVALIDATE_FEED = 'INVALIDATE_FEED'
 export const EDIT_LAYOUT = 'EDIT_LAYOUT'
 export const CANCEL_EDIT = 'CANCEL_EDIT'
@@ -16,12 +15,6 @@ export const FETCH_ERROR = 'FETCH_ERROR'
 /*
  * action creators
  */
- export function selectFeed(feed) {
-   return {
-     type: SELECT_FEED,
-     feed
-   }
- }
 
 export function editLayout(layout) {
   return {
@@ -52,8 +45,13 @@ function isLayoutValid(layout) {
 function layoutDidSave(layout) {
   console.log('layoutDidSave', layout)
   localStorage.setItem('layout', JSON.stringify({...layout, isEditing:false}))
-  return {
-    type: SAVED_LAYOUT
+  return dispatch => {
+    for (let feed of feeds) {
+      console.log ('feed', feed)
+      dispatch(invalidateFeed(feed))
+      dispatch(fetchTweetsIfNeeded(feed, layout))
+    }
+
   }
 }
 
@@ -74,7 +72,7 @@ export function invalidateFeed(feed) {
      type: INVALIDATE_FEED,
      feed
    }
- }
+}
 
 function requestTweets(feed) {
    return {
@@ -117,7 +115,7 @@ function fetchTweets(feed, count) {
    }
 }
 
-function shouldFetchTweets(state, feed) {
+function shouldFetchTweets(state, feed, tweetLimit) {
   const tweets = state.tweetsByFeed[feed]
   if (!tweets) {
     return true

@@ -4,11 +4,11 @@ import TweetText from './TweetText'
 import moment from 'moment'
 export default class Tweets extends Component {
   render() {
-
+    const {tweets, layout} = this.props
     return (
       <ul className="tweet-list">
-        {this.props.tweets.map((tweet, i) =>
-          (<li className="tweet" key={i}>
+        {tweets.map((tweet, i) =>
+          (<li className={`${layout.theme} tweet`} key={i}>
             <TweetText tweet={tweet}/>
             <TweetLink tweet={tweet}/>
             <p id="creation-date"><small>{moment(tweet.created_at).format('YYYY-MM-DD HH:mm')}</small></p>
@@ -21,5 +21,6 @@ export default class Tweets extends Component {
 }
 
 Tweets.propTypes = {
-  tweets: PropTypes.array.isRequired
+  tweets: PropTypes.array.isRequired,
+  layout: PropTypes.object.isRequired
 }

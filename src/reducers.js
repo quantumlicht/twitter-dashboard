@@ -72,7 +72,7 @@ function tweets(state = {
         error: undefined
       }
     case FETCH_ERROR:
-      return {...state, isFetching:false, errors: actions.errors}
+      return {...state, isFetching:false, errors: action.errors}
     default:
       return state
   }

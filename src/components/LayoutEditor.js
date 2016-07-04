@@ -39,7 +39,7 @@ class LayoutEditor extends Component {
           <Picker value={columnsOrder[0]} onChange={this.handleFeedOrderChange} options={feeds} />
         </div>
         <div className="row">
-          <a className="btn btn-save" href="#" onClick={e=> {onSave(this.state)}}>Save</a>
+          <a className="btn btn-primary" href="#" onClick={e=> {onSave(this.state)}}>Save</a>
         </div>
       </div>
     )
