@@ -43,18 +43,15 @@ function isLayoutValid(layout) {
 }
 
 function layoutDidSave(layout) {
-  console.log('layoutDidSave', layout)
   localStorage.setItem('layout', JSON.stringify({...layout, isEditing:false}))
   return dispatch => {
     for (let feed of feeds) {
-      console.log ('feed', feed)
       dispatch(invalidateFeed(feed))
       dispatch(fetchTweetsIfNeeded(feed, layout))
     }
 
   }
 }
-
 
 export function saveLayoutIfValid(layout) {
 
