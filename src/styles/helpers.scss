@@ -9,7 +9,7 @@
 }
 
 .link {
-  text-decoration: none;
+  // text-decoration: none;
   @each $theme, $map in $themes {
     .#{$theme} & {
       color: darken(map-get($map, color), 60%);
