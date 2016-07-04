@@ -65,24 +65,22 @@ class AsyncApp extends Component {
     return (
       <div id ="app-container" className={layout.theme}>
         <div className="row">
-          <a className="btn btn-default" href='#'
-             onClick={this.handleRefreshClick}>
-            Refresh
-          </a>
-          <a className="btn btn-primary" href='#'
-             onClick={this.handleEditClick}>
-            Edit Template
-          </a>
-          {layout.isEditing &&
+          <div className="column column-12">
             <a className="btn btn-default" href='#'
-              onClick={this.handleCancelEditClick}>
-              Cancel
+              onClick={this.handleRefreshClick}>
+              Refresh
             </a>
-          }
+            <a className="btn btn-primary" href='#'
+              onClick={this.handleEditClick}>
+              Edit Template
+            </a>
+          </div>
+          <div className="column column-4">{' '}</div>
         </div>
+
         <div className="row">
           {layout.isEditing &&
-            <LayoutEditor {...layout} onSave={this.handleLayoutSave}/>
+            <LayoutEditor {...layout} onSave={this.handleLayoutSave} onCancel={this.handleCancelEditClick}/>
           }
         </div>
 

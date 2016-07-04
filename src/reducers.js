@@ -6,7 +6,6 @@ import {
   EDIT_LAYOUT, REQUEST_SAVE_LAYOUT, CANCEL_EDIT, SAVED_LAYOUT ,
   FETCH_ERROR
 } from './actions/general'
-import { FORM_UPDATE_VALUE, FORM_RESET } from './actions/form'
 
 
 function getCurrentLayout(){
