@@ -1,16 +1,18 @@
+@import 'themes';
 .muted {
   color: rgba(128,128,128,0.5);
   font-size: 0.75em;
 }
-
-.dark {
-  background-color: rgba(125,125,125,0.5);
-}
-
-.light {
-  background-color: beige;
+.center {
+  text-align: center;
+  vertical-align: middle;
 }
 
 .link {
   text-decoration: none;
+  @each $theme, $map in $themes {
+    .#{$theme} & {
+      color: darken(map-get($map, color), 60%);
+    }
+  }
 }

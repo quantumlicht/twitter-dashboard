@@ -1,37 +1,25 @@
+@import 'themes';
+/* http://zellwk.com/blog/organizing-multiple-theme-styles-with-sass/ */
 .btn {
+  
   text-decoration: none;
-  margin: 0 5px;
+  margin: 2.5px 5px;
   padding: 7.5px;
   border-radius: 4px;
   font-size: 1.5em;
   line-height: 1.5em;
 }
 
-.btn-edit {
-  color: darken($edit-btn-color, 25%);
-  border: 1px solid darken($edit-btn-color, 10%);
-  background-color: $edit-btn-color;
+.btn-primary {
+  color: darken($primary-btn-color, 25%);
+  border: 1px solid darken($primary-btn-color, 10%);
+  background-color: $primary-btn-color;
   text-shadow: 0px 1px 0px rgba(255,255,255,.3), 0px -1px 0px rgba(0,0,0,.7);
 }
 
-.btn-cancel {
-  color: darken($cancel-btn-color, 25%);
-  border: 1px solid darken($cancel-btn-color, 10%);
-  background-color: $cancel-btn-color;
-  text-shadow: 0px 1px 0px rgba(255,255,255,.3), 0px -1px 0px rgba(0,0,0,.7);
-}
-
-.btn-refresh {
-  color: darken($refresh-btn-color, 25%);
-  border: 1px solid darken($refresh-btn-color, 10%);
-  background-color: $refresh-btn-color;
-  text-shadow: 0px 1px 0px rgba(255,255,255,.3), 0px -1px 0px rgba(0,0,0,.7);
-}
-
-
-.btn-save {
-  color: darken($save-btn-color, 25%);
-  border: 1px solid darken($save-btn-color, 10%);
-  background-color: $save-btn-color;
+.btn-default {
+  color: darken($default-btn-color, 25%);
+  border: 1px solid darken($default-btn-color, 10%);
+  background-color: $default-btn-color;
   text-shadow: 0px 1px 0px rgba(255,255,255,.3), 0px -1px 0px rgba(0,0,0,.7);
 }

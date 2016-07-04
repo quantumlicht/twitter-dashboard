@@ -1,0 +1,19 @@
+$themes: (
+  light: (
+    color: white
+  ),
+  dark: (
+    color: rgba(125,125,125,0.5)
+  ),
+  solarize: (
+    color: beige
+  ),
+);
+
+/* reference: http://zellwk.com/blog/organizing-multiple-theme-styles-with-sass/ */
+@each $theme, $map in $themes {
+  .#{$theme} {
+    background-color: map-get($map, color);
+  }
+
+}
